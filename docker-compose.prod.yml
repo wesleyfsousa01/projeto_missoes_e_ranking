@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: ./backend
+      target: prod # <--- Build otimizado
+    restart: always
+    volumes: [] # Anula o espelhamento de código
+    # O BD mantém a configuração do arquivo base
+    
+  web:
+    build:
+      context: ./frontend
+      target: prod # <--- Build otimizado com Nginx
+    restart: always
+    ports:
+      - "80:80" # Expõe a porta web padrão do Nginx
+    volumes: [] # Anula o espelhamento de código

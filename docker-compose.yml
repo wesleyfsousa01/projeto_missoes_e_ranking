@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: missoes_db
+    environment:
+      POSTGRES_USER: missoes_user
+      POSTGRES_PASSWORD: missoes_password
+      POSTGRES_DB: missoes_db
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U missoes_user -d missoes_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: ./backend
+      target: dev # <--- Aponta para o estágio de desenvolvimento
+    container_name: missoes_api
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://missoes_user:missoes_password@db:5432/missoes_db?schema=public
+      - JWT_SECRET=super_secret_jwt_key_gamified
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend:/usr/src/app
+      - /usr/src/app/node_modules
+
+  web:
+    build:
+      context: ./frontend
+      target: dev # <--- Aponta para o estágio de desenvolvimento
+    container_name: missoes_web
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:3000
+    depends_on:
+      - api
+    volumes:
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
+
+volumes:
+  pgdata:
