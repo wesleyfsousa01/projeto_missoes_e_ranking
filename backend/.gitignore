@@ -10,3 +10,6 @@ yarn-error.log
 .env
 .env.test
 .env.production
+
+# Prisma Generated Client
+src/generated/

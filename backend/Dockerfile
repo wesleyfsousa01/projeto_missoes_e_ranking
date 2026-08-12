@@ -8,14 +8,14 @@ COPY package*.json ./
 FROM base AS dev
 RUN npm install
 COPY . .
-# RUN npx prisma generate
+RUN npx prisma generate
 CMD ["npm", "run", "start:dev"]
 
 # --- ESTÁGIO 3: Builder (Prepara para Prod) ---
 FROM base AS builder
 RUN npm install
 COPY . .
-# RUN npx prisma generate
+RUN npx prisma generate
 RUN npm run build
 
 # --- ESTÁGIO 4: Produção ---
@@ -24,6 +24,6 @@ WORKDIR /usr/src/app
 COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app/package*.json ./
 COPY --from=builder /usr/src/app/dist ./dist
-# COPY --from=builder /usr/src/app/prisma ./prisma
+COPY --from=builder /usr/src/app/prisma ./prisma
 EXPOSE 3000
 CMD ["npm", "run", "start:prod"]

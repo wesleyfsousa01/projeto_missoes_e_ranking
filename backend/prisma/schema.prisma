@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+  moduleFormat = "cjs"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Player {
+  id        String          @id @default(uuid())
+  name      String
+  email     String          @unique
+  password  String
+  score     Int             @default(0)
+  createdAt DateTime        @default(now())
+  missions  PlayerMission[]
+
+  @@map("players")
+}
+
+model Mission {
+  id          String          @id @default(uuid())
+  title       String
+  description String
+  points      Int
+  players     PlayerMission[]
+
+  @@map("missions")
+}
+
+model PlayerMission {
+  id         String   @id @default(uuid())
+  playerId   String
+  missionId  String
+  completedAt DateTime @default(now())
+
+  player  Player  @relation(fields: [playerId], references: [id])
+  mission Mission @relation(fields: [missionId], references: [id])
+
+  @@unique([playerId, missionId])
+
+  @@map("player_missions")
+}
