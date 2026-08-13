@@ -28,9 +28,6 @@ services:
     environment:
       - DATABASE_URL=postgresql://missoes_user:missoes_password@db:5432/missoes_db?schema=public
       - JWT_SECRET=super_secret_jwt_key_gamified
-      - CHOKIDAR_USEPOLLING=true
-      - WATCHPACK_POLLING=true
-      - TSC_WATCHFILE=UsePolling
     depends_on:
       db:
         condition: service_healthy
