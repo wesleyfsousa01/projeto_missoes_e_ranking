@@ -8,6 +8,7 @@ import {
   AuthDomainError,
   EmailAlreadyExistsError,
   InvalidCredentialsError,
+  InvalidTokenError,
 } from '../erros';
 import { Response } from 'express';
 
@@ -15,6 +16,7 @@ export class AuthExceptionsFilter implements ExceptionFilter {
   private readonly statusMap = new Map<Type<AuthDomainError>, HttpStatus>([
     [EmailAlreadyExistsError, HttpStatus.CONFLICT],
     [InvalidCredentialsError, HttpStatus.UNAUTHORIZED],
+    [InvalidTokenError, HttpStatus.UNAUTHORIZED],
   ]);
 
   catch(exception: AuthDomainError, host: ArgumentsHost) {

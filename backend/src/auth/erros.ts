@@ -18,3 +18,9 @@ export class InvalidCredentialsError extends AuthDomainError {
     this.name = 'InvalidCredentialsError';
   }
 }
+export class InvalidTokenError extends AuthDomainError {
+  constructor() {
+    super('Token ausente ou inválido.');
+    this.name = 'InvalidTokenError';
+  }
+}
