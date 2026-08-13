@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
@@ -10,6 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import { Player } from 'src/generated/prisma/client';
+import { EmailAlreadyExistsError, InvalidCredentialsError } from './erros';
 
 @Injectable()
 export class AuthService {
@@ -25,7 +22,7 @@ export class AuthService {
       where: { email },
     });
     if (playerExists) {
-      throw new ConflictException('O e-mail já está em uso.');
+      throw new EmailAlreadyExistsError(email);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -49,12 +46,12 @@ export class AuthService {
     });
 
     if (!player) {
-      throw new UnauthorizedException('Credenciais inválidas.');
+      throw new InvalidCredentialsError();
     }
 
     const isPasswordValid = await bcrypt.compare(password, player.password);
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Credenciais inválidas.');
+      throw new InvalidCredentialsError();
     }
 
     return this.generateAuthResponse(player);
