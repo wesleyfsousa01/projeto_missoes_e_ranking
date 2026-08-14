@@ -1,5 +1,6 @@
 import {
   ArgumentsHost,
+  Catch,
   ExceptionFilter,
   HttpStatus,
   Type,
@@ -12,6 +13,7 @@ import {
 } from '../erros';
 import { Response } from 'express';
 
+@Catch(AuthDomainError)
 export class AuthExceptionsFilter implements ExceptionFilter {
   private readonly statusMap = new Map<Type<AuthDomainError>, HttpStatus>([
     [EmailAlreadyExistsError, HttpStatus.CONFLICT],
