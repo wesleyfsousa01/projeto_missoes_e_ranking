@@ -42,8 +42,6 @@ services:
     container_name: missoes_web
     ports:
       - "5173:5173"
-    environment:
-      - VITE_API_URL=http://api:3000
     depends_on:
       - api
     volumes:
