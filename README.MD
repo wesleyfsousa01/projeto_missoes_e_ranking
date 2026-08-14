@@ -11,7 +11,16 @@ Este repositório contém a aplicação completa, estruturada em um modelo **Mon
 
 ---
 
-## 🛠️ Como rodar o projeto em Desenvolvimento
+## 🛠️ Decisões de Projeto (Desafio de Código)
+
+Como este repositório é fruto de um desafio de código, algumas decisões importantes foram tomadas visando a **facilidade absoluta de avaliação**:
+
+1. **Variáveis de ambiente no `docker-compose.yml`**: Você notará que as variáveis de ambiente essenciais (como `DATABASE_URL` e `JWT_SECRET`) estão _hardcoded_ no arquivo `docker-compose.yml`. Isso foi feito intencionalmente para cumprir o requisito de "subir toda a aplicação apenas rodando `docker compose up`", sem que o avaliador precise criar arquivos `.env` manualmente na raiz.
+2. **Arquivo `.env.test` versionado**: O arquivo `.env.test` dentro da pasta `backend` foi comitado e versionado no Git propositalmente. Ele contém configurações seguras e exclusivas para os testes automatizados (apontando para um schema específico do banco). Assim, a suíte de testes pode ser executada por qualquer pessoa imediatamente após o clone sem configuração prévia.
+
+---
+
+## ⚙️ Como rodar o projeto em Desenvolvimento
 
 O ambiente de desenvolvimento foi configurado para máxima produtividade. Ele utiliza *Hot-Reload* (volumes espelhados) tanto no Frontend quanto no Backend, permitindo que as alterações no código reflitam instantaneamente.
 
@@ -36,6 +45,31 @@ O ambiente de desenvolvimento foi configurado para máxima produtividade. Ele ut
    - Frontend (Vite): [http://localhost:5173](http://localhost:5173)
    - Backend (NestJS API): [http://localhost:3000/api](http://localhost:3000/api)
    - O banco de dados (Postgres) estará rodando na porta `5433` (mapeada para a `5432` interna).
+
+---
+
+## 🧪 Testes Automatizados (E2E)
+
+A aplicação conta com uma suíte de testes de integração (End-to-End) robusta para garantir a estabilidade das Regras de Negócio e resiliência à concorrência (como _Race Conditions_ e cliques duplos simultâneos em missões).
+
+**Isolamento de Dados:** 
+Para não poluir o banco de desenvolvimento/produção, os testes rodam no mesmo container do PostgreSQL, porém totalmente isolados em um schema diferente (`schema=test`). O script `npm run test:e2e` (definido no package.json) injeta automaticamente o arquivo `.env.test` antes de acionar o Prisma e o Jest.
+
+### Como rodar os testes
+
+**Dentro do container Docker (Recomendado se você não tem o Node/npm instalados localmente):**
+Certifique-se de que a aplicação subiu com `docker compose up -d`, então execute:
+```bash
+docker exec -it missoes_api npm run test:e2e
+```
+
+**Fora do Docker (Direto na sua máquina local):**
+Certifique-se de que o container do banco esteja rodando (para liberar a porta 5433 local).
+```bash
+cd backend
+npm install
+npm run test:e2e
+```
 
 ---
 
