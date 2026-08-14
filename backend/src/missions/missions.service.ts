@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '@/prisma/prisma.service';
 import { CompleteMissionResponseDto } from './dto/complete-mission-response.dto';
 import { MissionAlreadyCompletedError, MissionNotFoundError } from './errors';
 import { MissionResponseDto } from './dto/mission-response.dto';
 import { CompletedMissionResponseDto } from './dto/completed-mission-response-dto';
-import { Prisma } from 'src/generated/prisma/client';
+import { Prisma } from '@/generated/prisma/client';
 
 @Injectable()
 export class MissionsService {
