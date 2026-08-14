@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useMemo,
+} from "react";
 import type { Player } from "../types";
 
 interface AuthContextData {
@@ -28,36 +34,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     return null;
   });
 
-  const login = (token: string, player: Player) => {
+  const login = useCallback((token: string, newPlayer: Player) => {
     localStorage.setItem("@MissoesRanking:token", token);
-    localStorage.setItem("@MissoesRanking:player", JSON.stringify(player));
-    setPlayer(player);
-  };
+    localStorage.setItem("@MissoesRanking:player", JSON.stringify(newPlayer));
+    setPlayer(newPlayer);
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem("@MissoesRanking:token");
     localStorage.removeItem("@MissoesRanking:player");
     setPlayer(null);
-  };
+  }, []);
 
-  const updateScore = (newScore: number) => {
-    if (player) {
-      const updatedPlayer = { ...player, score: newScore };
-      setPlayer(updatedPlayer);
-      localStorage.setItem(
-        "@MissoesRanking:player",
-        JSON.stringify(updatedPlayer),
-      );
-    }
-  };
+  const updateScore = useCallback((newScore: number) => {
+    setPlayer((prev) => {
+      if (prev) {
+        const updatedPlayer = { ...prev, score: newScore };
+        localStorage.setItem(
+          "@MissoesRanking:player",
+          JSON.stringify(updatedPlayer),
+        );
+        return updatedPlayer;
+      }
+      return prev;
+    });
+  }, []);
 
-  return (
-    <AuthContext.Provider
-      value={{ player, isAuthenticated: !!player, login, logout, updateScore }}
-    >
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({
+      player,
+      isAuthenticated: !!player,
+      login,
+      logout,
+      updateScore,
+    }),
+    [player, login, logout, updateScore],
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 // eslint-disable-next-line react-refresh/only-export-components

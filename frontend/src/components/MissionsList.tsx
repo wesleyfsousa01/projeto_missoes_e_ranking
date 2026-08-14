@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { CheckCircle, Target, LogIn } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import confetti from "canvas-confetti";
 
 export const MissionsList = () => {
   const { isAuthenticated, updateScore, logout } = useAuth();
@@ -66,11 +67,30 @@ export const MissionsList = () => {
 
     try {
       const response = await api.post(`/missions/${mission.id}/complete`);
-      setCompletedIds((prev) => new Set(prev).add(mission.id));
       updateScore(response.data.currentScore);
-      toast.success(
-        `Missão "${mission.title}" concluída! +${mission.points} pts`,
-      );
+
+      const nextSize = completedIds.has(mission.id)
+        ? completedIds.size
+        : completedIds.size + 1;
+
+      setCompletedIds((prev) => new Set(prev).add(mission.id));
+
+      if (nextSize === missions.length && missions.length > 0) {
+        confetti({
+          particleCount: 150,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ["#ff1c1c", "#ffffff", "#ffaaaa"],
+        });
+        toast.success("Parabéns! Você concluiu TODAS as missões!", {
+          icon: "🎉",
+          duration: 5000,
+        });
+      } else {
+        toast.success(
+          `Missão "${mission.title}" concluída! +${mission.points} pts`,
+        );
+      }
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         const errorType = error.response.data?.error;
