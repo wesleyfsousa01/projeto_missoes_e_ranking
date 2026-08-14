@@ -17,11 +17,15 @@ Como este repositório é fruto de um desafio de código, algumas decisões fora
 
 1. **Variáveis de ambiente no `docker-compose.yml`**: Você notará que as variáveis de ambiente essenciais (como `DATABASE_URL` e `JWT_SECRET`) estão _hardcoded_ no arquivo `docker-compose.yml`. Isso foi feito intencionalmente para cumprir o requisito de "subir toda a aplicação apenas rodando `docker compose up`", sem que o avaliador precise criar arquivos `.env` manualmente na raiz.
 2. **Arquivo `.env.test` versionado**: O arquivo `.env.test` dentro da pasta `backend` foi comitado e versionado no Git propositalmente. Ele contém configurações seguras e exclusivas para os testes automatizados (apontando para um schema específico do banco). Assim, a suíte de testes pode ser executada por qualquer pessoa imediatamente após o clone sem configuração prévia.
-3. **Seed de Missões Iniciais**: Para cumprir o requisito de facilitar a avaliação, o projeto conta com um _seed_ configurado via Prisma (`prisma/seed.ts`). Ele se encarrega de popular o banco de dados 10 missões previamente cadastradas, permitindo que a aplicação seja testada logo após o _start_ dos containers.
+3. **Seed de Missões Iniciais**: Para cumprir o requisito de facilitar a avaliação, o projeto conta com um _seed_ configurado via Prisma (`prisma/seed.ts`). Ele se encarrega de popular o banco de dados com 10 missões previamente cadastradas, permitindo que a aplicação seja testada logo após o _start_ dos containers.
 
 ---
 
 ## 🏛️ Decisões Arquiteturais e Escolha da Stack
+
+Para facilitar o entendimento do fluxo e da modelagem de dados, confira abaixo os diagramas da aplicação:
+
+![Diagrama de Arquitetura e Banco de Dados](./docs/doc_diagramas.png)
 
 A stack do projeto foi montada pensando em resolver os requisitos do desafio técnico de forma pragmática. Seguem as motivações de cada escolha:
 
