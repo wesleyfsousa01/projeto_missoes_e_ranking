@@ -1,6 +1,6 @@
-# 🏆 Projeto Missões e Ranking (Monorepo)
+# 🏆 Projeto Missões e Ranking
 
-Este repositório contém a aplicação completa, estruturada em um modelo **Monorepo**, contendo o Frontend (React + Vite) e o Backend (NestJS). Toda a infraestrutura é orquestrada via **Docker**, garantindo que o projeto rode perfeitamente em qualquer máquina com zero configurações manuais.
+Este repositório contém a aplicação completa em um modelo **Monorepo**, englobando o Frontend (React + Vite) e o Backend (NestJS). A infraestrutura é configurada via **Docker** para facilitar a execução do projeto em qualquer ambiente, minimizando a necessidade de configurações manuais.
 
 ## 🚀 Tecnologias Utilizadas
 
@@ -13,10 +13,23 @@ Este repositório contém a aplicação completa, estruturada em um modelo **Mon
 
 ## 🛠️ Decisões de Projeto (Desafio de Código)
 
-Como este repositório é fruto de um desafio de código, algumas decisões importantes foram tomadas visando a **facilidade absoluta de avaliação**:
+Como este repositório é fruto de um desafio de código, algumas decisões foram tomadas com o objetivo de **facilitar a avaliação**:
 
 1. **Variáveis de ambiente no `docker-compose.yml`**: Você notará que as variáveis de ambiente essenciais (como `DATABASE_URL` e `JWT_SECRET`) estão _hardcoded_ no arquivo `docker-compose.yml`. Isso foi feito intencionalmente para cumprir o requisito de "subir toda a aplicação apenas rodando `docker compose up`", sem que o avaliador precise criar arquivos `.env` manualmente na raiz.
 2. **Arquivo `.env.test` versionado**: O arquivo `.env.test` dentro da pasta `backend` foi comitado e versionado no Git propositalmente. Ele contém configurações seguras e exclusivas para os testes automatizados (apontando para um schema específico do banco). Assim, a suíte de testes pode ser executada por qualquer pessoa imediatamente após o clone sem configuração prévia.
+3. **Seed de Missões Iniciais**: Para cumprir o requisito de facilitar a avaliação, o projeto conta com um _seed_ configurado via Prisma (`prisma/seed.ts`). Ele se encarrega de popular o banco de dados 10 missões previamente cadastradas, permitindo que a aplicação seja testada logo após o _start_ dos containers.
+
+---
+
+## 🏛️ Decisões Arquiteturais e Escolha da Stack
+
+A stack do projeto foi montada pensando em resolver os requisitos do desafio técnico de forma pragmática. Seguem as motivações de cada escolha:
+
+- **Estrutura em Monorepo:** Manter frontend e backend no mesmo repositório facilita a manutenção e o versionamento. Para a avaliação do teste técnico, é útil porque basta um único clone para ter acesso a tudo. Também ajuda a fazer commits atômicos de funcionalidades que envolvem tanto a API quanto a UI.
+- **Backend (NestJS):** Escolhido pela boa adoção de mercado e documentação. Por ser um framework opinado, ele já traz uma estrutura de pastas e injeção de dependências prontas, o que poupa tempo de setup inicial. O Nest CLI também ajuda bastante na produtividade. Outro ponto que pesou a favor para o desafio foi o suporte nativo a WebSockets (com Socket.io), o que simplificou a implementação do requisito de Ranking em tempo real.
+- **Banco de Dados e ORM (PostgreSQL + Prisma):** O PostgreSQL atende ao requisito obrigatório da stack do desafio. Junto com ele, optei pelo Prisma ORM pela tipagem estática de ponta a ponta com TypeScript e pela forma simples de lidar com transações no banco (_Prisma Client Transactions_). O uso de transações foi importante para resolver a regra de concorrência e evitar que um duplo clique compute a mesma missão duas vezes.
+- **Frontend (React + Vite):** O React foi escolhido por familiaridade e pelo ecossistema maduro para criação de interfaces baseadas em componentes. O Vite foi utilizado devido ao _build_ mais rápido e HMR eficiente, melhorando o tempo de resposta durante o desenvolvimento.
+- **Infraestrutura e Produção (Docker + Nginx):** O projeto usa Docker Compose para atender ao requisito de "subir tudo com um comando" e manter um ambiente de desenvolvimento prático. No frontend em produção, utilizei o Nginx. Como o servidor embutido do Vite serve apenas para desenvolvimento, o Nginx atua como um servidor web leve e comum no mercado para servir os arquivos estáticos gerados pelo _build_ do React.
 
 ---
 
@@ -50,7 +63,7 @@ O ambiente de desenvolvimento foi configurado para máxima produtividade. Ele ut
 
 ## 🧪 Testes Automatizados (E2E)
 
-A aplicação conta com uma suíte de testes de integração (End-to-End) robusta para garantir a estabilidade das Regras de Negócio e resiliência à concorrência (como _Race Conditions_ e cliques duplos simultâneos em missões).
+A aplicação possui testes end-to-end (E2E) para cobrir o fluxo principal e garantir que as regras de negócio de concorrência e duplo clique funcionem conforme o esperado.
 
 **Isolamento de Dados:** 
 Para não poluir o banco de desenvolvimento/produção, os testes rodam no mesmo container do PostgreSQL, porém totalmente isolados em um schema diferente (`schema=test`). O script `npm run test:e2e` (definido no package.json) injeta automaticamente o arquivo `.env.test` antes de acionar o Prisma e o Jest.
