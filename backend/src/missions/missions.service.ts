@@ -5,10 +5,14 @@ import { MissionAlreadyCompletedError, MissionNotFoundError } from './errors';
 import { MissionResponseDto } from './dto/mission-response.dto';
 import { CompletedMissionResponseDto } from './dto/completed-mission-response-dto';
 import { Prisma } from '@/generated/prisma/client';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class MissionsService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
 
   async findAllMissions(): Promise<MissionResponseDto[]> {
     return this.prismaService.mission.findMany({
@@ -68,6 +72,9 @@ export class MissionsService {
           completedAt: playerMission.completedAt,
         };
       });
+
+      // Atualiza o ranking em tempo real notificando outros módulos
+      this.eventEmitter.emit('mission.completed');
 
       return result;
     } catch (error) {
