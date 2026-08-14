@@ -21,4 +21,17 @@ export class PrismaService
   async onModuleDestroy() {
     await this.$disconnect();
   }
+
+  async cleanDb() {
+    if (process.env.NODE_ENV !== 'test') {
+      console.warn(
+        'Tentativa de limpar o banco fora do ambiente de testes foi bloqueada por segurança!',
+      );
+      return;
+    }
+
+    await this.playerMission.deleteMany();
+    await this.mission.deleteMany();
+    await this.player.deleteMany();
+  }
 }
