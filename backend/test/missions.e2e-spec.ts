@@ -33,7 +33,12 @@ describe('Missions Flow (e2e)', () => {
   // Função auxiliar (Factory)
   async function setupTestScenario() {
     const mission = await prisma.mission.create({
-      data: { title: 'Missão Teste', description: 'XPTO', points: 100 },
+      data: {
+        title: 'Missão Teste',
+        description: 'XPTO',
+        points: 100,
+        order: 1,
+      },
     });
 
     const registerResponse = await request(app.getHttpServer() as Server)
@@ -93,6 +98,7 @@ describe('Missions Flow (e2e)', () => {
           title: 'Segunda Missão',
           description: 'Mais pontos',
           points: 50,
+          order: 2,
         },
       });
 
@@ -210,6 +216,47 @@ describe('Missions Flow (e2e)', () => {
         .set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toBe(HttpStatus.NOT_FOUND);
+    });
+
+    it('deve retornar 403 Forbidden se tentar completar uma missão sem ter concluído seus pré-requisitos', async () => {
+      const { token } = await setupTestScenario();
+
+      // Criar missão base e missão avançada
+      const missaoBase = await prisma.mission.create({
+        data: { title: 'Base', description: 'Base', points: 10, order: 1 },
+      });
+      const missaoAvancada = await prisma.mission.create({
+        data: {
+          title: 'Avancada',
+          description: 'Avançada',
+          points: 50,
+          order: 2,
+        },
+      });
+
+      // Adicionar pré-requisito
+      await prisma.missionPrerequisite.create({
+        data: { missionId: missaoAvancada.id, prerequisiteId: missaoBase.id },
+      });
+
+      // Tenta completar a avançada diretamente
+      const erroResponse = await request(app.getHttpServer() as Server)
+        .post(`/api/missions/${missaoAvancada.id}/complete`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(erroResponse.status).toBe(HttpStatus.FORBIDDEN);
+
+      // Agora completa a base
+      await request(app.getHttpServer() as Server)
+        .post(`/api/missions/${missaoBase.id}/complete`)
+        .set('Authorization', `Bearer ${token}`);
+
+      // Tenta completar a avançada novamente
+      const sucessoResponse = await request(app.getHttpServer() as Server)
+        .post(`/api/missions/${missaoAvancada.id}/complete`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(sucessoResponse.status).toBe(HttpStatus.CREATED);
     });
   });
 });
