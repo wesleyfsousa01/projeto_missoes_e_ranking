@@ -3,4 +3,6 @@ export class MissionResponseDto {
   title!: string;
   description!: string;
   points!: number;
+  order!: number;
+  prerequisites?: { prerequisiteId: string }[];
 }

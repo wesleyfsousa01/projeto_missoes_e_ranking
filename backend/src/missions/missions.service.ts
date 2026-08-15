@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { CompleteMissionResponseDto } from './dto/complete-mission-response.dto';
-import { MissionAlreadyCompletedError, MissionNotFoundError } from './errors';
+import {
+  MissionAlreadyCompletedError,
+  MissionNotFoundError,
+  PrerequisitesNotMetError,
+} from './errors';
 import { MissionResponseDto } from './dto/mission-response.dto';
 import { CompletedMissionResponseDto } from './dto/completed-mission-response-dto';
 import { Prisma } from '@/generated/prisma/client';
@@ -16,7 +20,8 @@ export class MissionsService {
 
   async findAllMissions(): Promise<MissionResponseDto[]> {
     return this.prismaService.mission.findMany({
-      orderBy: { points: 'asc' },
+      include: { prerequisites: true },
+      orderBy: { order: 'asc' },
     });
   }
 
@@ -48,10 +53,25 @@ export class MissionsService {
   ): Promise<CompleteMissionResponseDto> {
     const mission = await this.prismaService.mission.findUnique({
       where: { id: missionId },
+      include: { prerequisites: true },
     });
 
     if (!mission) {
       throw new MissionNotFoundError();
+    }
+
+    if (mission.prerequisites.length > 0) {
+      const prereqIds = mission.prerequisites.map((p) => p.prerequisiteId);
+      const completedPrereqs = await this.prismaService.playerMission.findMany({
+        where: {
+          playerId,
+          missionId: { in: prereqIds },
+        },
+      });
+
+      if (completedPrereqs.length < prereqIds.length) {
+        throw new PrerequisitesNotMetError();
+      }
     }
 
     try {

@@ -10,6 +10,7 @@ import {
   MissionsDomainError,
   MissionNotFoundError,
   MissionAlreadyCompletedError,
+  PrerequisitesNotMetError,
 } from '../errors';
 
 @Catch(MissionsDomainError)
@@ -17,6 +18,7 @@ export class MissionsExceptionsFilter implements ExceptionFilter {
   private readonly statusMap = new Map<Type<MissionsDomainError>, HttpStatus>([
     [MissionNotFoundError, HttpStatus.NOT_FOUND],
     [MissionAlreadyCompletedError, HttpStatus.CONFLICT],
+    [PrerequisitesNotMetError, HttpStatus.FORBIDDEN],
   ]);
 
   catch(exception: MissionsDomainError, host: ArgumentsHost) {

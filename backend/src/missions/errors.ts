@@ -18,3 +18,10 @@ export class MissionAlreadyCompletedError extends MissionsDomainError {
     this.name = 'MissionAlreadyCompletedError';
   }
 }
+
+export class PrerequisitesNotMetError extends MissionsDomainError {
+  constructor() {
+    super('Você não atende aos pré-requisitos para esta missão.');
+    this.name = 'PrerequisitesNotMetError';
+  }
+}
