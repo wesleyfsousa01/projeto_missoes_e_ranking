@@ -3,7 +3,7 @@ import { api } from "../services/api";
 import type { Mission, CompletedMission } from "../types";
 import { useAuth } from "../contexts/AuthContext";
 import { toast } from "sonner";
-import { CheckCircle, Target, LogIn } from "lucide-react";
+import { CheckCircle, Target, LogIn, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import confetti from "canvas-confetti";
@@ -132,6 +132,10 @@ export const MissionsList = () => {
           {missions.map((mission) => {
             const isCompleted = completedIds.has(mission.id);
             const isLoading = loadingIds.has(mission.id);
+            const isLocked =
+              mission.prerequisites?.some(
+                (p) => !completedIds.has(p.prerequisiteId),
+              ) ?? false;
 
             return (
               <div
@@ -139,7 +143,9 @@ export const MissionsList = () => {
                 className={`bg-surface border p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 shadow-lg ${
                   isCompleted
                     ? "border-primary/20 opacity-80"
-                    : "border-white/5 hover:border-white/10 hover:shadow-xl"
+                    : isLocked
+                      ? "border-white/5 opacity-50 grayscale-[50%]"
+                      : "border-white/5 hover:border-white/10 hover:shadow-xl"
                 }`}
               >
                 <div>
@@ -160,11 +166,13 @@ export const MissionsList = () => {
 
                 <button
                   onClick={() => handleComplete(mission)}
-                  disabled={isCompleted || isLoading}
+                  disabled={isCompleted || isLoading || isLocked}
                   className={`w-full py-2.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${
                     isCompleted
                       ? "bg-primary/10 text-primary cursor-not-allowed border border-primary/20"
-                      : "bg-primary hover:bg-primary/90 text-white hover:scale-[1.02]"
+                      : isLocked
+                        ? "bg-white/5 text-white/40 cursor-not-allowed border border-white/5"
+                        : "bg-primary hover:bg-primary/90 text-white hover:scale-[1.02]"
                   }`}
                 >
                   {isLoading ? (
@@ -173,6 +181,11 @@ export const MissionsList = () => {
                     <>
                       <CheckCircle className="w-4 h-4" />
                       Concluída
+                    </>
+                  ) : isLocked ? (
+                    <>
+                      <Lock className="w-4 h-4" />
+                      Bloqueada
                     </>
                   ) : (
                     "Completar Missão"

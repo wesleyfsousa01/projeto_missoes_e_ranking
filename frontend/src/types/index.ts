@@ -15,6 +15,8 @@ export interface Mission {
   title: string;
   description: string;
   points: number;
+  order: number;
+  prerequisites?: { prerequisiteId: string }[];
 }
 
 export interface CompletedMission {
