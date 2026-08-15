@@ -5,13 +5,13 @@ services:
     image: postgres:15-alpine
     container_name: missoes_db
     environment:
-      POSTGRES_USER: missoes_user
-      POSTGRES_PASSWORD: missoes_password
-      POSTGRES_DB: missoes_db
+      POSTGRES_USER: ${POSTGRES_USER:-missoes_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-missoes_password}
+      POSTGRES_DB: ${POSTGRES_DB:-missoes_db}
     ports:
       - "5433:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U missoes_user -d missoes_db"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -26,8 +26,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - DATABASE_URL=postgresql://missoes_user:missoes_password@db:5432/missoes_db?schema=public
-      - JWT_SECRET=super_secret_jwt_key_gamified
+      - DATABASE_URL=${DATABASE_URL:-postgresql://missoes_user:missoes_password@db:5432/missoes_db?schema=public}
+      - JWT_SECRET=${JWT_SECRET:-super_secret_jwt_key_gamified}
     depends_on:
       db:
         condition: service_healthy
