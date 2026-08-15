@@ -1,12 +1,10 @@
-version: '3.8'
-
 services:
   api:
     build:
       context: ./backend
       target: prod # <--- Build otimizado
     restart: always
-    volumes: !reset[] # Anula o espelhamento de código
+    volumes: !reset [] # Anula o espelhamento de código
     # O BD mantém a configuração do arquivo base
     
   web:
@@ -16,4 +14,4 @@ services:
     restart: always
     ports:
       - "80:80" # Expõe a porta web padrão do Nginx
-    volumes: !reset[] # Anula o espelhamento de código
+    volumes: !reset [] # Anula o espelhamento de código

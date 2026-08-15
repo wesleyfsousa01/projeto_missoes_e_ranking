@@ -8,8 +8,7 @@ COPY package*.json ./
 FROM base AS dev
 RUN npm install
 COPY . .
-RUN npx prisma generate
-CMD ["sh", "-c", "npx prisma migrate deploy && npx prisma db seed && npm run start:dev"]
+CMD ["sh", "-c", "npx prisma generate && npx prisma migrate deploy && npx prisma db seed && npm run start:dev"]
 
 # --- ESTÁGIO 3: Builder (Prepara para Prod) ---
 FROM base AS builder
