@@ -1,9 +1,12 @@
+import { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
+import { LogoutModal } from "./LogoutModal";
 
 export const Header = () => {
   const { player, isAuthenticated, logout } = useAuth();
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   return (
     <header className="w-full flex flex-col sm:flex-row items-center justify-between gap-4 py-4 mb-8 border-b border-white/5">
@@ -37,7 +40,7 @@ export const Header = () => {
             </div>
             <div className="w-[1px] h-6 bg-white/10"></div>
             <button
-              onClick={logout}
+              onClick={() => setIsLogoutModalOpen(true)}
               className="text-white/50 hover:text-red-500 transition-colors p-1"
               title="Sair"
             >
@@ -61,6 +64,15 @@ export const Header = () => {
           </div>
         )}
       </div>
+
+      <LogoutModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen(false)}
+        onConfirm={() => {
+          setIsLogoutModalOpen(false);
+          logout();
+        }}
+      />
     </header>
   );
 };

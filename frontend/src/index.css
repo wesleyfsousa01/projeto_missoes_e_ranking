@@ -6,4 +6,9 @@
   body {
     @apply bg-background text-white font-mono antialiased;
   }
+
+  input::-ms-reveal,
+  input::-ms-clear {
+    display: none;
+  }
 }
