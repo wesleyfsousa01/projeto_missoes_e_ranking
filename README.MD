@@ -25,7 +25,7 @@ Como este repositório é fruto de um desafio de código, algumas decisões fora
 
 Para facilitar o entendimento do fluxo e da modelagem de dados, confira abaixo os diagramas da aplicação:
 
-![Diagrama de Arquitetura e Banco de Dados](./docs/doc_diagramas.png)
+![Diagrama de Arquitetura e Banco de Dados](./docs/images/doc_diagramas_v2.png)
 
 A stack do projeto foi montada pensando em resolver os requisitos do desafio técnico de forma pragmática. Seguem as motivações de cada escolha:
 
