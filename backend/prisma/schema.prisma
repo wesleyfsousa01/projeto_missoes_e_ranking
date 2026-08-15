@@ -23,6 +23,7 @@ model Player {
   createdAt DateTime        @default(now())
   missions  PlayerMission[]
 
+  @@index([score(sort: Desc)])
   @@map("players")
 }
 
@@ -31,21 +32,33 @@ model Mission {
   title       String
   description String
   points      Int
+  order       Int             @default(0)
   players     PlayerMission[]
+  prerequisites MissionPrerequisite[] @relation("MissionRequirements")
+  prerequisiteFor MissionPrerequisite[] @relation("RequiredForMissions")
 
   @@map("missions")
 }
 
 model PlayerMission {
-  id         String   @id @default(uuid())
   playerId   String
   missionId  String
   completedAt DateTime @default(now())
 
-  player  Player  @relation(fields: [playerId], references: [id])
-  mission Mission @relation(fields: [missionId], references: [id])
+  player  Player  @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  mission Mission @relation(fields: [missionId], references: [id], onDelete: Cascade)
 
-  @@unique([playerId, missionId])
-
+  @@id([playerId, missionId])
   @@map("player_missions")
+}
+
+model MissionPrerequisite {
+  missionId      String
+  prerequisiteId String
+
+  mission      Mission @relation("MissionRequirements", fields: [missionId], references: [id], onDelete: Cascade)
+  prerequisite Mission @relation("RequiredForMissions", fields: [prerequisiteId], references: [id], onDelete: Cascade)
+
+  @@id([missionId, prerequisiteId])
+  @@map("mission_prerequisites")
 }
