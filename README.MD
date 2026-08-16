@@ -2,6 +2,11 @@
 
 Este repositório contém a aplicação completa em um modelo **Monorepo**, englobando o Frontend (React + Vite) e o Backend (NestJS). A infraestrutura é configurada via **Docker** para facilitar a execução do projeto em qualquer ambiente, minimizando a necessidade de configurações manuais.
 
+## 🌍 Live Demo (Deploy)
+
+A aplicação está hospedada e pode ser acessada online através do link:
+👉 **[https://wesleyferreiradev.tech/](https://wesleyferreiradev.tech/)**
+
 ## 🚀 Tecnologias Utilizadas
 
 - **Frontend:** React, TypeScript, Vite, Nginx (Produção)
