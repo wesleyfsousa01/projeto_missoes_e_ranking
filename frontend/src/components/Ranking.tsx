@@ -66,7 +66,7 @@ export const Ranking = () => {
                       scale: { duration: 0.2 },
                     }}
                     key={player.id}
-                    className={`flex items-center justify-between p-3 rounded-xl ${
+                    className={`flex items-center justify-between gap-3 p-3 rounded-xl ${
                       isTop1
                         ? "bg-yellow-400/10 border border-yellow-400/50 shadow-[0_0_15px_rgba(250,204,21,0.3)]"
                         : isCurrentUser
@@ -74,9 +74,9 @@ export const Ranking = () => {
                           : "bg-background border border-white/5"
                     }`}
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
                       <span
-                        className={`font-black ${
+                        className={`font-black shrink-0 ${
                           isTop1
                             ? "text-yellow-400"
                             : isCurrentUser
@@ -87,28 +87,28 @@ export const Ranking = () => {
                         #{index + 1}
                       </span>
                       <span
-                        className={`font-medium flex items-center gap-2 truncate max-w-[120px] sm:max-w-[150px] ${
+                        className={`font-medium flex items-center gap-2 flex-1 min-w-0 ${
                           isCurrentUser ? "text-white font-bold" : ""
                         }`}
                       >
-                        {player.name}
+                        <span className="truncate">{player.name}</span>
                         {isTop1 && (
-                          <Crown className="w-4 h-4 text-yellow-400" />
+                          <Crown className="w-4 h-4 text-yellow-400 shrink-0" />
                         )}
                         {isCurrentUser && !isTop1 && (
-                          <span className="text-xs text-primary/80 ml-1">
+                          <span className="text-xs text-primary/80 shrink-0">
                             (Você)
                           </span>
                         )}
                         {isCurrentUser && isTop1 && (
-                          <span className="text-xs text-yellow-400/80 ml-1">
+                          <span className="text-xs text-yellow-400/80 shrink-0">
                             (Você)
                           </span>
                         )}
                       </span>
                     </div>
                     <div
-                      className={`font-mono text-sm px-2 py-1 rounded-md border ${
+                      className={`font-mono shrink-0 text-sm px-2 py-1 rounded-md border ${
                         isTop1
                           ? "bg-yellow-400/20 border-yellow-400/30"
                           : "bg-background border-white/5"
